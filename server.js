@@ -1,24 +1,21 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
+const dotenv =require('dotenv')
+dotenv.config({path:'config/config.env'})
+const db =require('./models')
 const passport = require('passport');
-var userProfile;
+const auth =require('./routes/auth')
+require('./config/passport')(passport)
 
-app.use(passport.initialize());
-app.use(passport.session());
-
+db.sequelize.sync();
 app.set('view engine', 'ejs');
-
-app.get('/success', (req, res) => res.send(userProfile));
-app.get('/error', (req, res) => res.send("error logging in"));
-
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
+app.set('views','./views')
+//app.use(express.json());
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+//app.use(express.urlencoded({extended:true}))
+ 
 
 app.use(session({
   resave: false,
@@ -26,37 +23,33 @@ app.use(session({
   secret: 'SECRET' 
 }));
 
+app.use(passport.initialize());
 
-const googleStretagy = require('passport-google-oauth20')
-passport.use(new googleStretagy({
-  clientID:"859232362732-2iddsh5frjl1b5ikd7eu6oeqlupcebrc.apps.googleusercontent.com",
-  clientSecret:"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",
-  callbackURL:"http://localhost:5000/auth/google/callback"
-},function(accessToken, refreshToken, profile, done) {
-  userProfile=profile;
-  console.log(accessToken)
- // console.log(userProfile)
-  
-  
-  return done(null, userProfile);
-}))
 
- 
-app.get('/auth/google', 
-  passport.authenticate('google', { scope : ['profile', 'email'] }));
- 
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/error' }),
-  (req, res)=> {
-    // Successful authentication, redirect success.
-    res.redirect('/success');
-  });
+app.use(passport.session());
 
 
 
-app.get('/', function(req, res) {
-  res.render('pages/auth');
-});
+app.use(require("./routes/index"))
+app.use('/auth',auth )
+// passport.serializeUser(function(user, cb) {
+//   cb(null, user);
+// });
 
-const port = process.env.PORT || 5000;
+// passport.deserializeUser(function(obj, cb) {
+//   cb(null, obj);
+// });
+
+
+// app.get('/success', (req, res) => res.send(userProfile));
+// app.get('/error', (req, res) => res.send("error logging in"));
+
+
+
+// app.get('/', function(req, res) {
+//   res.render('auth');
+// });
+
+
+const port = process.env.PORT || 2000
 app.listen(port , () => console.log('App listening on port ' + port));
