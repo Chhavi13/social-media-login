@@ -22,6 +22,6 @@ db.sequelize = sequelize
 
 db.users = require('../models/User')(sequelize, Sequelize)
 
-
+db.fbusers = require('../models/fbUser')(sequelize,Sequelize)
 
 module.exports = db;

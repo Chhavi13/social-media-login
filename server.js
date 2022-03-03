@@ -7,6 +7,8 @@ const db =require('./models')
 const passport = require('passport');
 const auth =require('./routes/auth')
 require('./config/passport')(passport)
+const fbauthroute= require('./routes/fbauth')
+const fbps =require('./config/fbpassport')
 
 db.sequelize.sync();
 app.set('view engine', 'ejs');
@@ -28,10 +30,9 @@ app.use(passport.initialize());
 
 app.use(passport.session());
 
-
-
 app.use(require("./routes/index"))
 app.use('/auth',auth )
+app.use('/auth',fbauthroute)
 // passport.serializeUser(function(user, cb) {
 //   cb(null, user);
 // });

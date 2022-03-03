@@ -26,7 +26,10 @@ module.exports = (passport) => {
         try {
 
             //find the user in our database 
-            let user = await User.findOne({ googleId: profile.id })
+            let user = await User.findOne({
+                where:{
+                 googleId: profile.id }
+                })
             if (user) {
                 //If user present in our database.
                 done(null, user)

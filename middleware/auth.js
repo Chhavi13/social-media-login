@@ -14,6 +14,8 @@ module.exports = {
       } else {
         res.redirect('/log');
       }
-    },
+    }
+
+  
   }
   
